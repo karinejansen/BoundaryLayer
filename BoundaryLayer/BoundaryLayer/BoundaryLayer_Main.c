@@ -162,16 +162,3 @@ int main()
 	return 0;
 }
 
-
-
-/*
-void testPrint1(void)
-{
-FILE * fp;
-
-fp = fopen("file.txt", "w+");
-fprintf(fp, "%s %s %s %d", "We", "are", "in", 2012);
-
-fclose(fp);
-}
-*/
