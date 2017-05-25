@@ -9,8 +9,6 @@
 
 #define M_PI 3.14159265358979323846264338327
 
-//void testPrint1(void);
-
 int main()
 {
 	float rho, mu, U, h1, h2, L, eps, nu, *x, alfa, beta, gamma, *U0, *delta2, delta2old, *tau_w, *delta1, error, *lambda;
@@ -21,7 +19,7 @@ int main()
 	mu = 1.82e-5;  //dynamic viscosity
 	U = 0.5;
 	h1 = 1.2;
-	h2 = 0.8;
+	h2 = 0.77;
 	L = 4.0;
 	eps = 10e-6;
 	nu = mu / rho;  //kinematic viscosity
