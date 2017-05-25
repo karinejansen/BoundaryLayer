@@ -1,9 +1,11 @@
-load('L4H12H08-n10.txt');
+% load('L4H12H08-n10.txt');
 load('L4H12H08-n20.txt');
 load('L4H12H08-n40.txt');
 load('L4H12H08-n80.txt');
 load('L4H12H08-n160.txt');
 load('L4H12H08-n320.txt');
+
+% fat dicks in yo ass
 
 add = [0 0 0.5 0 0 100];
 
