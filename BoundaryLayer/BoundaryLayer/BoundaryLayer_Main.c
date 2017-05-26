@@ -19,12 +19,12 @@ int main()
 	mu = 1.82e-5;  //dynamic viscosity
 	U = 0.5;
 	h1 = 1.2;
-	h2 = 0.77;
-	L = 4.0;
+	h2 = 0.8;
+	L = 1000;
 	eps = 10e-6;
 	nu = mu / rho;  //kinematic viscosity
 
-	/*
+	/*		// EXAMPLE
 	rho = 1.161;
 	nu = 15.89e-6;  //kinematic viscosity
 	mu = nu * rho;  //dynamic viscosity
@@ -99,39 +99,26 @@ int main()
 		delta1[i] = alfa*delta2[i] / beta;
 
 	}
-	//printf("xi\n");
-
+	
 	FILE *f;
 	f = fopen("result.txt", "w");
-	//errno_t fopen_s(FILE *f "result.txt", "w");
-	//f = fopen_s(f, "result.txt", "w");
-
+	
 	for (i = 0; i < N; ++i)	// print all values and send each data point to GNUPLOT
 	{
 		//Send a new data point to GNUPLOT
 		fprintf(gp, "%g %g \n", x[i], delta1[i]);
-		// print in command window
+		// print to command window
 		//printf("i = %2.2d xi = %2.4f U0(x) = %6.6e lambda(x) = %6.6e delta1(x) = %6.6e tau_w(x) = %6.6e \n", i, x[i], U0[i], lambda[i], delta1[i], tau_w[i]);
-		// print to text file
 		printf("%i\t%f\t%f\t%f\t%f\t%f\n", i, x[i], U0[i], lambda[i], delta1[i], tau_w[i]);
 		//fprintf(f, "%2.2d %2.4f %6.6e %6.6e %6.6e %6.6e \n", i, x[i], U0[i], lambda[i], delta1[i], tau_w[i]);
 	}
-	for (i = 1; i < N; ++i)	// print all values and send each data point to GNUPLOT
+	for (i = 1; i < N; ++i)	// print vaules to text file (starting form i=1 to avoid infinity for tau)
 	{
+		// print to text file
 		fprintf(f, "%i\t%f\t%f\t%f\t%f\t%f\n", i, x[i], U0[i], lambda[i], delta1[i], tau_w[i]);
-		//printf("%f\t%f\t%f\t%f\t%f\t%f\n", i, x[i], U0[i], lambda[i], delta1[i], tau_w[i]);
-		//printf("%2.4f\n", x[i]);
 	}
 	fclose(f);
 
-
-
-	/*
-	printf("delta1(x)\n");
-	for (i = 0; i < N; ++i)	// to copy to excell
-	{
-	printf("%6.6e\n", delta1[i]);
-	} */
 
 	//Send the e command indicating end of data point list
 	fprintf(gp, "e");
@@ -143,7 +130,6 @@ int main()
 	free(delta2);
 	free(tau_w);
 	free(delta1);
-	//free(k);
 	free(lambda);
 
 	end_t = clock();
@@ -154,8 +140,6 @@ int main()
 	//Wait until user presses any key (second time, after entering n first) to terminate
 	//getchar();
 	//getchar();
-
-	//testPrint1();
 
 	return 0;
 }

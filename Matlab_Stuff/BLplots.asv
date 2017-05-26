@@ -184,7 +184,7 @@ in = [0:1:80];
 x = 2*cos(in*pi/80 +pi)+2;
 
 figure(9)
-plot(in,x)
+plot(x,i)
 title('non-uniform distribution')
-ylabel('x-location [m]') 
-xlabel('n-x [-]')
+xlabel('x-location [m]') 
+ylabel('displacement thickness [m]')
