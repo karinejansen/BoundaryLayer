@@ -1,11 +1,9 @@
 /*Program to predict the boundary layer flow in a 2-d channel using an integral boundary layer method and conservations of mass (assuming a Pohlhausen profile)*/
 #pragma warning (disable : 4996)
-//#define _CRT_SECURE_NO_DEPRECATE
 #include<stdio.h>
 #include<math.h>
 #include<stdlib.h>
 #include <time.h>
-//#include <errno.h>
 
 #define M_PI 3.14159265358979323846264338327
 
@@ -20,7 +18,7 @@ int main()
 	U = 0.5;
 	h1 = 1.2;
 	h2 = 0.8;
-	L = 1000;
+	L = 4;
 	eps = 10e-6;
 	nu = mu / rho;  //kinematic viscosity
 
@@ -75,11 +73,21 @@ int main()
 	gamma = 2. + (lambda[0] / 6.);
 	tau_w[0] = beta*gamma*((mu*U0[0]) / delta2[0]);
 
+	// for non-uniform distribution (geometric)
+	float x1, r, C1, C2, C3;
+	x1 = 0.05;
+	C1 = L / x1;
+	C2 =n - 1;
+	C3 = 1 / C2;
+	r = pow(C1,C3);
+	printf("C1 = %10.4f\n C2 = %10.4f\n C3 = %10.4f\n r = %10.4f\n", C1, C2, C3, r);
+	
 	// iteration over every n
 	for (i = 1; i < N; ++i)
 	{
-		x[i] = i * L / n;
-		//x[i] = L / 2 * cos(i * M_PI / n + M_PI) + L / 2;
+		//x[i] = i * L / n;											// UNIFORM DISTRIBUTION
+		//x[i] = L / 2 * cos(i * M_PI / n + M_PI) + L / 2;			// NON-UNIFORM DISTRIBUTION (cosine)
+		x[i] = x1*pow(r,i-1);										// NON-UNIFORM DISTRIBUTION (geometric)
 		delta2[i] = delta2[i - 1];
 
 		do          // iteration for U0, lambda and delta2 at position x[i]
