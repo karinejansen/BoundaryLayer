@@ -39,10 +39,9 @@ legend('n = 10','n = 20', 'n = 40', 'n = 80', 'n = 160', 'n = 320')
 
 % TIME TAKEN
 nUniform = [10 20 40 80 81 160 320];
-TimeUniform = [0.005 0.013 0.032 0.088 0.077 0.128 0.262];
+TimeUniform = [0 0 0.016 0.085 0.069 0.116 0.234];
 nNonUniform = [10 20 40 80];
-TimeNonUniform = [0.005 0.009 0.03 0.085];
-%labels = ['10', '20', '40', '80', '81', '160', '320'] ;
+TimeNonUniform = [0 0 0.015 0.085];
 labels = cellstr( num2str(nUniform') );
 
 figure (2)
@@ -335,7 +334,7 @@ legend('uniform:', 'n = 80', 'geometric:','n = 20', 'n = 40', 'cosine:', 'n = 40
 
 % GEOMETRIC - TIME TAKEN
 nGeometric = [10 20 40 80 160];
-TimeGeometric = [0.005 0.011 0.071 0.084 0.124];
+TimeGeometric = [0 0 0.068 0.1 0.118];
 
 figure (17)
 plot(nUniform, TimeUniform, 'o')
@@ -348,3 +347,40 @@ xlabel('number of discretisations')
 ylabel('time taken by CPU')
 legend('uniform', 'cosine', 'geometric')
 text(nUniform, TimeUniform, labels,'VerticalAlignment','middle', 'HorizontalAlignment','left')
+
+% ITERATIONS
+IterUniform = [6.7 5.6 4.2 3.625 3.654321 3.5625 3.703125];
+IterNonUniform = [6.8 5.4 4.225 4.8125];
+IterGeometric = [5.6 5.05 4.55 4.1 3.725];
+
+figure (18)
+plot(nUniform, IterUniform, 'o')
+hold on
+plot(nNonUniform, IterNonUniform, 'd')
+plot(nGeometric, IterGeometric, 's')
+hold off
+title('average number of iterations')
+xlabel('number of discretisations')
+ylabel('# of iterations')
+legend('uniform', 'cosine', 'geometric')
+text(nUniform, TimeUniform, labels,'VerticalAlignment','middle', 'HorizontalAlignment','left')
+ylim([3.5 7])
+xlim([0 175])
+
+TotalUniform = [67 112 168 290 296 570 1185];
+TotalNonUniform = [68 108 169 385 ];
+TotalGeometric = [56 101 182 328 596];
+
+figure (19)
+plot(nUniform, TotalUniform, 'o')
+hold on
+plot(nNonUniform, TotalNonUniform, 'd')
+plot(nGeometric, TotalGeometric, 's')
+hold off
+title('total number of iterations')
+xlabel('number of discretisations')
+ylabel('# of iterations')
+legend('uniform', 'cosine', 'geometric')
+%text(nUniform, TimeUniform, labels,'VerticalAlignment','middle', 'HorizontalAlignment','left')
+%ylim([3.5 7])
+xlim([0 175])

@@ -1,5 +1,5 @@
 /*Program to predict the boundary layer flow in a 2-d channel using an integral boundary layer method and conservations of mass (assuming a Pohlhausen profile)*/
-#pragma warning (disable : 4996)
+#pragma warning (disable : 4996)			//to disable warning concerning printing to a file
 #include<stdio.h>
 #include<math.h>
 #include<stdlib.h>
@@ -9,9 +9,9 @@
 
 int main()
 {
-	float rho, mu, U, h1, h2, L, eps, nu, *x, alfa, beta, gamma, *U0, *delta2, delta2old, *tau_w, *delta1, error, *lambda;
-	int n, i, N;
-
+	float rho, mu, U, h1, h2, L, eps, nu, *x, alfa, beta, gamma, *U0, *delta2, delta2old, *tau_w, *delta1, error, *lambda, K;
+	int n, i, N, *k;
+	double sum;
 
 	rho = 1.19;
 	mu = 1.82e-5;  //dynamic viscosity
@@ -22,7 +22,7 @@ int main()
 	eps = 10e-6;
 	nu = mu / rho;  //kinematic viscosity
 
-	/*		// EXAMPLE
+	/*		// DATA USED FOR VERIFICATION EXAMPLE
 	rho = 1.161;
 	nu = 15.89e-6;  //kinematic viscosity
 	mu = nu * rho;  //dynamic viscosity
@@ -61,33 +61,42 @@ int main()
 	tau_w = malloc(N*sizeof(float));
 	delta1 = malloc(N*sizeof(float));
 	lambda = malloc(N*sizeof(float));
-
-	x[0] = 0;			// intitial values
+	k = malloc(N*sizeof(int));
+	
+	// INITIAL VALUES
+	x[0] = 0;			
 	U0[0] = U;
 	delta2[0] = 0;
 	lambda[0] = 0;
-	//tau_w[0] = +INFINITY;
 	delta1[0] = 0;
 	alfa = (3. / 10.) - (lambda[0] / 120.);
 	beta = (37. / 315.) - (lambda[0] / 945.) - (lambda[0] * lambda[0] / 9072.);
 	gamma = 2. + (lambda[0] / 6.);
 	tau_w[0] = beta*gamma*((mu*U0[0]) / delta2[0]);
 
-	// for non-uniform distribution (geometric)
+	// Set initial values for k by setting the whole array to zero, k is used for counting the number of iteriations necessary in the for while loop
+	for (i = 0; i < N; ++i)
+	{
+	k[i] = 0;
+	} 
+	sum = 0;
+	
+	/*// for non-uniform distribution (geometric)
 	float x1, r, C1, C2, C3;
-	x1 = 0.05;
+	x1 = 0.05;			// equal to steps in uniform distribution with L=4, n=80
 	C1 = L / x1;
 	C2 =n - 1;
 	C3 = 1 / C2;
 	r = pow(C1,C3);
-	printf("C1 = %10.4f\n C2 = %10.4f\n C3 = %10.4f\n r = %10.4f\n", C1, C2, C3, r);
+	//printf("C1 = %10.4f\n C2 = %10.4f\n C3 = %10.4f\n r = %10.4f\n", C1, C2, C3, r);
+	*/
 	
 	// iteration over every n
 	for (i = 1; i < N; ++i)
 	{
-		//x[i] = i * L / n;											// UNIFORM DISTRIBUTION
+		x[i] = i * L / n;											// UNIFORM DISTRIBUTION
 		//x[i] = L / 2 * cos(i * M_PI / n + M_PI) + L / 2;			// NON-UNIFORM DISTRIBUTION (cosine)
-		x[i] = x1*pow(r,i-1);										// NON-UNIFORM DISTRIBUTION (geometric)
+		//x[i] = x1*pow(r,i-1);										// NON-UNIFORM DISTRIBUTION (geometric)
 		delta2[i] = delta2[i - 1];
 
 		do          // iteration for U0, lambda and delta2 at position x[i]
@@ -100,6 +109,7 @@ int main()
 			gamma = 2. + (lambda[i] / 6.);
 			delta2[i] = sqrt(((delta2[i - 1] * delta2[i - 1]) + 2. * nu*((beta * gamma) / U0[i])*(x[i] - x[i - 1])) / (1. + 2. * (2. + alfa / beta)*(U0[i] - U0[i - 1]) / U0[i]));
 			error = (delta2[i] - delta2old) / delta2[i];
+			k[i] = k[i] + 1;
 
 		} while (sqrt(error*error) > eps); //stop iteration when delta2old and delta2 new converged to convergence tolerance (epsilon)
 
@@ -117,16 +127,17 @@ int main()
 		fprintf(gp, "%g %g \n", x[i], delta1[i]);
 		// print to command window
 		//printf("i = %2.2d xi = %2.4f U0(x) = %6.6e lambda(x) = %6.6e delta1(x) = %6.6e tau_w(x) = %6.6e \n", i, x[i], U0[i], lambda[i], delta1[i], tau_w[i]);
-		printf("%i\t%f\t%f\t%f\t%f\t%f\n", i, x[i], U0[i], lambda[i], delta1[i], tau_w[i]);
+		sum = sum + k[i];
+		printf("%i\t%f\t%f\t%f\t%f\t%f\t%i\t%f\n", i, x[i], U0[i], lambda[i], delta1[i], tau_w[i], k[i], sum);
 		//fprintf(f, "%2.2d %2.4f %6.6e %6.6e %6.6e %6.6e \n", i, x[i], U0[i], lambda[i], delta1[i], tau_w[i]);
+		
 	}
-	for (i = 1; i < N; ++i)	// print vaules to text file (starting form i=1 to avoid infinity for tau)
+	for (i = 1; i < N; ++i)	// print values to text file (starting from i=1 to avoid infinity for tau) (initial values will be added in matlab)
 	{
 		// print to text file
 		fprintf(f, "%i\t%f\t%f\t%f\t%f\t%f\n", i, x[i], U0[i], lambda[i], delta1[i], tau_w[i]);
 	}
 	fclose(f);
-
 
 	//Send the e command indicating end of data point list
 	fprintf(gp, "e");
@@ -139,15 +150,17 @@ int main()
 	free(tau_w);
 	free(delta1);
 	free(lambda);
+	free(k);
 
 	end_t = clock();
 	printf("End of the program, end_t = %ld\n", end_t);
 	total_t = ((double)(end_t - start_t)) / CLOCKS_PER_SEC;
 	printf("Total time taken by CPU: %f\n", total_t);
-
-	//Wait until user presses any key (second time, after entering n first) to terminate
-	//getchar();
-	//getchar();
+	K = sum / n;
+	printf("average number of iterations: %f\n", K);
+	Wait until user presses any key (second time, after entering n first) to terminate
+	getchar();
+	getchar();
 
 	return 0;
 }
